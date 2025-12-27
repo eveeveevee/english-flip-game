@@ -1,30 +1,130 @@
-function renderCards(){
-  const cards = document.getElementById("cards");
-  const preset = JSON.parse(localStorage.getItem("preset")) || ["g","e","w","q","a"];
-  const vocab = JSON.parse(localStorage.getItem("vocab")) || {};
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flip Test｜Word Mission</title>
 
-  cards.innerHTML = "";
-
-  preset.forEach(letter=>{
-    const list = vocab[letter];
-    if(!list || list.length===0) return;
-
-    const word = list[0]; // 老師設定的正解
-
-    const card = document.createElement("div");
-    card.className = "card";
-
-    card.innerHTML = `
-      <div class="inner">
-        <div class="face front">${letter}</div>
-        <div class="face back">
-          <div>${word[0]}</div>
-          <div>${word[1]}</div>
-        </div>
-      </div>
-    `;
-
-    card.onclick = ()=>card.classList.toggle("flip");
-    cards.appendChild(card);
-  });
+<style>
+/* ===== 基本 ===== */
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;
+  background:#0f2a1d;
 }
+
+/* ===== 容器 ===== */
+.app{
+  width:100%;
+  height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+/* ===== 卡片區 ===== */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(5,160px);
+  gap:20px;
+}
+
+/* ===== 翻牌核心（關鍵） ===== */
+.card{
+  width:160px;
+  height:220px;
+  perspective:1000px;   /* 一定要在最外層 */
+  cursor:pointer;
+}
+
+.card-inner{
+  width:100%;
+  height:100%;
+  position:relative;
+  transform-style:preserve-3d;
+  transition:transform .6s;
+}
+
+/* 翻轉觸發點 */
+.card.flip .card-inner{
+  transform:rotateY(180deg);
+}
+
+/* 正反面 */
+.card-face{
+  position:absolute;
+  inset:0;
+  border-radius:16px;
+  border:2px solid #fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  backface-visibility:hidden; /* 一定要 */
+}
+
+.card-front{
+  background:#153827;
+  font-size:56px;
+  font-weight:900;
+  color:#fff;
+}
+
+.card-back{
+  background:#1f4d36;
+  transform:rotateY(180deg);
+  color:#fff;
+  flex-direction:column;
+  gap:8px;
+}
+
+.eng{font-size:22px;font-weight:700}
+.zh{font-size:18px;opacity:.9}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <div class="cards" id="cards"></div>
+
+</div>
+
+<script>
+/* ===== 測試資料（不靠 localStorage） ===== */
+const testData = [
+  {letter:"g", eng:"gate", zh:"大門"},
+  {letter:"e", eng:"error", zh:"錯誤"},
+  {letter:"w", eng:"wallet", zh:"錢包"},
+  {letter:"q", eng:"quiz", zh:"小考"},
+  {letter:"a", eng:"area", zh:"區域"}
+];
+
+const cardsEl = document.getElementById("cards");
+
+/* ===== 產生卡片 ===== */
+testData.forEach(item=>{
+  const card = document.createElement("div");
+  card.className = "card";
+
+  card.innerHTML = `
+    <div class="card-inner">
+      <div class="card-face card-front">${item.letter}</div>
+      <div class="card-face card-back">
+        <div class="eng">${item.eng}</div>
+        <div class="zh">${item.zh}</div>
+      </div>
+    </div>
+  `;
+
+  card.addEventListener("click", ()=>{
+    card.classList.toggle("flip");
+  });
+
+  cardsEl.appendChild(card);
+});
+</script>
+</body>
+</html>
