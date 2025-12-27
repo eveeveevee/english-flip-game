@@ -6,252 +6,183 @@
 <title>Word Mission｜英語單字翻牌任務</title>
 
 <style>
-:root{
-  --bg:#0b1a13;
-  --board:#0f2a1d;
-  --card:#153827;
-  --line:#f4f1e8;
-  --accent:#f9c74f;
-  --soft:#cfe6da;
-}
+/* ===== 基本設定 ===== */
 *{box-sizing:border-box}
 html,body{
-  margin:0;width:100%;height:100%;
-  font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
-  background:var(--bg);
-}
-body{display:flex;justify-content:center;align-items:center}
-
-/* 舞台 */
-.app{
-  width:94vw;max-width:1280px;
-  height:calc(94vw * 9 / 16);max-height:92vh;
-  background:var(--board);
-  border-radius:20px;
-  box-shadow:0 0 0 6px rgba(255,255,255,.05);
-  position:relative;
+  margin:0;
+  width:100%;
+  height:100%;
+  font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;
+  background:#0f2a1d;
   overflow:hidden;
 }
 
-/* Header */
-header{
-  position:absolute;
-  top:1vh;left:2vw;right:2vw;
-  display:flex;justify-content:space-between;align-items:center;
-  z-index:5;
-}
-header h1{margin:0;font-size:clamp(18px,2.6vw,30px);color:#fff}
-header button{
-  background:transparent;
-  border:2px solid var(--line);
+/* ===== 主舞台 ===== */
+.app{
+  width:100vw;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
   color:#fff;
-  padding:.4em .8em;
-  border-radius:12px;
-  cursor:pointer;
+  position:relative;
 }
 
-/* 規則導入 */
+/* ===== Header ===== */
+header{
+  position:absolute;
+  top:12px;
+  left:20px;
+  right:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  z-index:20;
+}
+header h1{
+  margin:0;
+  font-size:clamp(20px,2.6vw,32px);
+}
+header a{
+  text-decoration:none;
+  border:2px solid #f4f1e8;
+  padding:6px 14px;
+  border-radius:14px;
+  color:#fff;
+  font-size:14px;
+}
+
+/* ===== 導入動畫 ===== */
 #intro{
-  position:absolute;inset:0;
-  background:var(--board);
+  position:absolute;
+  inset:0;
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  gap:1em;
-  color:#fff;
+  gap:14px;
+  background:#0f2a1d;
   z-index:10;
 }
 .rule{
   opacity:0;
-  animation:fadeIn .8s forwards;
+  font-size:clamp(18px,2.4vw,26px);
+  transition:opacity .8s;
 }
-.rule:nth-child(1){animation-delay:.3s}
-.rule:nth-child(2){animation-delay:.9s}
-.rule:nth-child(3){animation-delay:1.5s}
-.rule:nth-child(4){animation-delay:2.1s}
-
-@keyframes fadeIn{
-  to{opacity:1}
-}
-
+.rule.show{opacity:1}
 #startBtn{
-  margin-top:1.5em;
-  background:var(--accent);
-  color:#000;
+  margin-top:24px;
+  padding:12px 28px;
   font-size:18px;
-  padding:.6em 1.4em;
   border:none;
-  border-radius:16px;
+  border-radius:18px;
+  background:#f9c74f;
+  color:#000;
   cursor:pointer;
 }
 
-/* 遊戲區 */
-.stage{
+/* ===== 遊戲畫面 ===== */
+#game{
   position:absolute;
   inset:0;
-  padding:8vh 2vw 2vh;
   display:none;
-  grid-template-rows:1fr auto;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  padding-top:70px;
 }
 
-/* 卡片 */
+/* ===== 卡片 ===== */
 .cards{
   display:grid;
   grid-template-columns:repeat(5,1fr);
-  gap:1.2vw;
+  gap:20px;
+  width:80%;
+  max-width:1100px;
 }
-.card{perspective:1200px;cursor:pointer}
-.inner{width:100%;height:100%;transition:.6s;transform-style:preserve-3d}
-.card.flip .inner{transform:rotateY(180deg)}
-.face{
-  position:absolute;inset:0;
-  background:var(--card);
-  border:2px solid var(--line);
-  border-radius:16px;
-  display:flex;justify-content:center;align-items:center;
-  backface-visibility:hidden;text-align:center;padding:1em
-}
-.front{font-size:clamp(32px,5vw,64px);font-weight:900;color:#fff}
-.back{
-  transform:rotateY(180deg);
-  flex-direction:column;gap:.5em;color:#fff
-}
-
-/* 規則小卡 */
-.rules-mini{
-  position:absolute;
-  right:1vw;bottom:1vh;
-  background:rgba(255,255,255,.08);
-  padding:.6em .8em;
-  border-radius:12px;
-  font-size:13px;
-  color:var(--soft);
-}
-
-/* 老師側欄 */
-.teacher{
-  position:absolute;
-  right:0;top:0;
-  width:280px;height:100%;
-  background:#10291d;
-  border-left:2px solid var(--line);
-  padding:1em;
-  display:none;
-  color:#fff;
-}
-.teacher h3{margin-top:0}
-.teacher input,.teacher textarea{
-  width:100%;margin:.3em 0;padding:.4em;border-radius:6px;border:none
-}
-.teacher button{
-  width:100%;margin-top:.4em;
-  background:var(--accent);border:none;
-  border-radius:10px;padding:.4em;
+.card{
+  height:200px;
+  background:#153827;
+  border:2px solid #f4f1e8;
+  border-radius:18px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:clamp(36px,6vw,64px);
+  font-weight:900;
   cursor:pointer;
 }
 
-/* 狀態 */
-.show{display:block}
-.showGrid{display:grid}
+/* ===== 規則小卡 ===== */
+.rules-mini{
+  position:absolute;
+  right:20px;
+  bottom:20px;
+  background:rgba(255,255,255,.08);
+  padding:12px 14px;
+  border-radius:14px;
+  font-size:14px;
+  line-height:1.4;
+  color:#cfe6da;
+}
 </style>
 </head>
 
 <body>
 <div class="app">
 
-<header>
-  <h1>Word Mission</h1>
-  <button onclick="toggleTeacher()">⚙️ 老師設定</button>
-</header>
+  <!-- Header -->
+  <header>
+    <h1>Word Mission</h1>
+    <a href="teacher.html" target="_blank">⚙️ 老師設定</a>
+  </header>
 
-<!-- 規則導入 -->
-<div id="intro">
-  <div class="rule">👥 五人一組，一人一張卡</div>
-  <div class="rule">🔄 翻牌後的英文＋中文是正解</div>
-  <div class="rule">🎤 神秘嘉賓只需唸英文＋中文</div>
-  <div class="rule">🏆 全組完成即可獲得獎勵</div>
-  <button id="startBtn" onclick="startGame()">我接下任務</button>
-</div>
-
-<!-- 遊戲畫面 -->
-<div class="stage" id="stage">
-  <div class="cards" id="cards"></div>
-  <div class="rules-mini">
-    👥 一人一張卡<br>
-    🔄 翻牌是正解<br>
-    🎤 神秘嘉賓可用
+  <!-- 規則導入 -->
+  <div id="intro">
+    <div class="rule">👥 五人一組，一人一張卡</div>
+    <div class="rule">🔄 翻牌後的英文＋中文是正解</div>
+    <div class="rule">🎤 神秘嘉賓只需唸英文＋中文</div>
+    <div class="rule">🏆 全組完成即可獲得獎勵</div>
+    <button id="startBtn">我接下任務</button>
   </div>
-</div>
 
-<!-- 老師設定 -->
-<div class="teacher" id="teacher">
-  <h3>新增單字</h3>
-  <input id="tLetter" placeholder="字母 a-z">
-  <input id="tEng" placeholder="英文">
-  <input id="tZh" placeholder="中文">
-  <button onclick="addWord()">新增單字</button>
-
-  <h3>新增預設題目</h3>
-  <textarea id="presetInput" placeholder="g e w q a"></textarea>
-  <button onclick="savePreset()">儲存預設題</button>
-</div>
+  <!-- 遊戲畫面 -->
+  <div id="game">
+    <div class="cards" id="cards"></div>
+    <div class="rules-mini">
+      👥 一人一張卡<br>
+      🔄 翻牌即正解<br>
+      🎤 神秘嘉賓可用
+    </div>
+  </div>
 
 </div>
 
 <script>
-const defaultVocab={
-  g:[["gate","大門"]],
-  e:[["error","錯誤"]],
-  w:[["wallet","錢包"]],
-  q:[["quiz","小考"]],
-  a:[["area","區域"]]
-};
-let vocab=JSON.parse(localStorage.getItem("vocab"))||defaultVocab;
-let preset=JSON.parse(localStorage.getItem("preset"))||["g","e","w","q","a"];
-const cards=document.getElementById("cards");
+/* ===== 規則動畫 ===== */
+const rules=document.querySelectorAll(".rule");
+rules.forEach((r,i)=>{
+  setTimeout(()=>r.classList.add("show"),700*i);
+});
 
-function startGame(){
+/* ===== 開始遊戲 ===== */
+document.getElementById("startBtn").onclick=()=>{
   document.getElementById("intro").style.display="none";
-  document.getElementById("stage").classList.add("showGrid");
-  render(preset);
-}
+  document.getElementById("game").style.display="flex";
+  renderCards();
+};
 
-function render(letters){
+/* ===== 產生卡片 ===== */
+function renderCards(){
+  const cards=document.getElementById("cards");
+  const preset=JSON.parse(localStorage.getItem("preset")) || ["g","e","w","q","a"];
   cards.innerHTML="";
-  letters.forEach(l=>{
-    const word=vocab[l][0];
+  preset.forEach(letter=>{
     const c=document.createElement("div");
     c.className="card";
-    c.innerHTML=`
-      <div class="inner">
-        <div class="face front">${l}</div>
-        <div class="face back">
-          <div>${word[0]}</div>
-          <div>${word[1]}</div>
-        </div>
-      </div>`;
-    c.onclick=()=>c.classList.toggle("flip");
+    c.textContent=letter;
     cards.appendChild(c);
   });
-}
-
-function toggleTeacher(){
-  const t=document.getElementById("teacher");
-  t.classList.toggle("show");
-}
-
-function addWord(){
-  if(!vocab[tLetter.value]) vocab[tLetter.value]=[];
-  vocab[tLetter.value].push([tEng.value,tZh.value]);
-  localStorage.setItem("vocab",JSON.stringify(vocab));
-  alert("已新增");
-}
-
-function savePreset(){
-  preset=presetInput.value.trim().split(/\s+/);
-  localStorage.setItem("preset",JSON.stringify(preset));
-  alert("預設題目已儲存");
 }
 </script>
 </body>
