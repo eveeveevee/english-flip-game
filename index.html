@@ -1,157 +1,180 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>黑板翻牌：字母救援任務</title>
-  <style>
-    body{
-      margin:0;
-      background:#0b0f0c;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      height:100vh;
-      font-family: "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
-    }
-    .stage{
-      width:1280px;
-      aspect-ratio:16/9;
-      background:#0d1f16;
-      color:#f3f1e8;
-      border-radius:20px;
-      box-shadow:0 20px 50px rgba(0,0,0,.4);
-      padding:24px;
-      box-sizing:border-box;
-      position:relative;
-    }
-    h1{
-      text-align:center;
-      margin:0;
-      font-size:32px;
-      letter-spacing:2px;
-    }
-    .buttons{
-      position:absolute;
-      top:24px;
-      right:24px;
-      display:flex;
-      gap:12px;
-    }
-    button{
-      background:#1f3d2b;
-      border:1px solid #f3f1e8;
-      color:#f3f1e8;
-      padding:10px 16px;
-      border-radius:12px;
-      font-size:16px;
-      cursor:pointer;
-    }
-    button:hover{background:#2a5740;}
-    .cards{
-      display:grid;
-      grid-template-columns:repeat(5,1fr);
-      gap:16px;
-      margin-top:80px;
-      height:320px;
-    }
-    .card{
-      perspective:1000px;
-      cursor:pointer;
-    }
-    .inner{
-      position:relative;
-      width:100%;
-      height:100%;
-      transform-style:preserve-3d;
-      transition:.6s;
-    }
-    .card.flip .inner{transform:rotateY(180deg);}
-    .face{
-      position:absolute;
-      inset:0;
-      border:2px solid #f3f1e8;
-      border-radius:16px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      backface-visibility:hidden;
-      background:#143022;
-    }
-    .front{
-      font-size:80px;
-      font-weight:900;
-    }
-    .back{
-      transform:rotateY(180deg);
-      flex-direction:column;
-      font-size:24px;
-      gap:8px;
-    }
-    .desc{
-      position:absolute;
-      bottom:24px;
-      left:24px;
-      font-size:16px;
-      line-height:1.6;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>英語單字翻牌互動遊戲</title>
+
+<style>
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  background:#0b0f0c;
+  font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
+}
+
+body{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.stage{
+  width:95vw;
+  max-width:1280px;
+  aspect-ratio:16/9;
+  max-height:95vh;
+  background:#0d1f16;
+  color:#f3f1e8;
+  border-radius:18px;
+  padding:2vh 2vw;
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+}
+
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+h1{
+  font-size:clamp(20px,3vw,32px);
+  margin:0;
+}
+
+button{
+  background:#1f3d2b;
+  border:1px solid #f3f1e8;
+  color:#f3f1e8;
+  padding:8px 14px;
+  border-radius:12px;
+  font-size:clamp(12px,1.6vw,16px);
+  cursor:pointer;
+}
+
+button:hover{background:#2a5740;}
+
+.cards{
+  flex:1;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:1.5vw;
+  margin:2vh 0;
+}
+
+.card{
+  perspective:1000px;
+}
+
+.inner{
+  width:100%;
+  height:100%;
+  transition:.6s;
+  transform-style:preserve-3d;
+}
+
+.card.flip .inner{
+  transform:rotateY(180deg);
+}
+
+.face{
+  position:absolute;
+  inset:0;
+  border:2px solid #f3f1e8;
+  border-radius:14px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  backface-visibility:hidden;
+  background:#143022;
+  text-align:center;
+  padding:1vh;
+  box-sizing:border-box;
+}
+
+.front{
+  font-size:clamp(36px,6vw,72px);
+  font-weight:900;
+}
+
+.back{
+  transform:rotateY(180deg);
+  flex-direction:column;
+  gap:.5em;
+}
+
+.back div:first-child{
+  font-size:clamp(16px,2.5vw,28px);
+  font-weight:900;
+}
+
+.back div:last-child{
+  font-size:clamp(14px,2vw,22px);
+}
+
+.desc{
+  font-size:clamp(12px,1.5vw,16px);
+  line-height:1.5;
+}
+</style>
 </head>
+
 <body>
-
 <div class="stage">
-  <h1>黑板翻牌：字母救援任務</h1>
-
-  <div class="buttons">
-    <button onclick="loadPreset()">預設題目</button>
-    <button onclick="loadRandom()">隨機題目</button>
-  </div>
+  <header>
+    <h1>英語單字翻牌互動遊戲</h1>
+    <div>
+      <button onclick="loadPreset()">預設題目</button>
+      <button onclick="loadRandom()">隨機題目</button>
+    </div>
+  </header>
 
   <div class="cards" id="cards"></div>
 
   <div class="desc">
-    選擇題目後，五人一組，每人翻一張卡片。<br>
-    翻牌後的英文＋中文就是正解。<br>
+    五人一組，每人一張卡。<br>
+    翻牌後的英文＋中文即為正解。<br>
     全組完成即可獲得獎勵。
   </div>
 </div>
 
 <script>
 const vocab={
-  a:[["area","區域"],["attack","攻擊"]],
-  b:[["bake","烘烤"],["bench","長椅"],["boil","煮"]],
-  c:[["code","程式"],["cross","穿越"]],
-  e:[["error","錯誤"]],
-  f:[["fill up","裝滿"],["files","檔案"]],
-  g:[["gate","大門"]],
-  l:[["lamp","燈"],["list","清單"]],
-  p:[["pack","打包"],["pocket","口袋"],["product","產品"]],
-  q:[["quiz","小考"]],
-  s:[["screen","螢幕"],["show up","出現"],["slide","滑動"]],
-  t:[["toilet","廁所"],["types","類型"]],
-  w:[["wallet","錢包"]]
+  s:["screen","set up","show up","slide","stranger"],
+  g:["gate"],
+  a:["area","attack"],
+  b:["bake","bench","boil"],
+  p:["pack","pocket","product"],
+  e:["error"],
+  w:["wallet"],
+  q:["quiz"]
 };
 
 const presets=[
-  ["g","e","w","q","a"],
-  ["b","a","g","e","w"],
-  ["a","b","w","e","p"],
   ["s","s","s","s","s"],
-  ["g","a","p","e","l"]
+  ["g","e","w","q","a"]
 ];
 
-const cardsEl=document.getElementById("cards");
+const cards=document.getElementById("cards");
 
 function draw(letters){
-  cardsEl.innerHTML="";
-  let used=new Set();
+  cards.innerHTML="";
+  let usedWords=[];
+
   letters.forEach(l=>{
-    let pool=vocab[l];
-    let word;
-    do{
-      word=pool[Math.floor(Math.random()*pool.length)];
-    }while(used.has(word[0]));
-    used.add(word[0]);
+    const pool=vocab[l]||[];
+    const available=pool.filter(w=>!usedWords.includes(w));
+
+    if(available.length===0){
+      alert(`字母 ${l} 單字不足，請補充單字庫`);
+      return;
+    }
+
+    const word=available[Math.floor(Math.random()*available.length)];
+    usedWords.push(word);
 
     const card=document.createElement("div");
     card.className="card";
@@ -159,12 +182,12 @@ function draw(letters){
       <div class="inner">
         <div class="face front">${l}</div>
         <div class="face back">
-          <div>${word[0]}</div>
-          <div>${word[1]}</div>
+          <div>${word}</div>
+          <div>（請老師補中文）</div>
         </div>
       </div>`;
     card.onclick=()=>card.classList.toggle("flip");
-    cardsEl.appendChild(card);
+    cards.appendChild(card);
   });
 }
 
@@ -175,15 +198,10 @@ function loadPreset(){
 
 function loadRandom(){
   const keys=Object.keys(vocab);
-  let letters=[];
-  for(let i=0;i<5;i++){
-    letters.push(keys[Math.floor(Math.random()*keys.length)]);
-  }
-  draw(letters);
+  draw(Array.from({length:5},()=>keys[Math.floor(Math.random()*keys.length)]));
 }
 
 loadPreset();
 </script>
-
 </body>
 </html>
