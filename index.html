@@ -30,44 +30,72 @@ body{display:flex;justify-content:center;align-items:center}
   border-radius:20px;
   box-shadow:0 0 0 6px rgba(255,255,255,.05);
   position:relative;
-  display:flex;
   overflow:hidden;
 }
 
-/* 主舞台 */
-.stage{
-  flex:1;
-  padding:1.5vh 2vw;
-  display:grid;
-  grid-template-rows:min-content 1fr min-content;
-  gap:1vh;
-  color:#fff;
-}
-
 /* Header */
-header{display:flex;justify-content:space-between;align-items:center}
-header h1{margin:0;font-size:clamp(18px,2.6vw,30px)}
-.controls{display:flex;gap:10px}
-button{
+header{
+  position:absolute;
+  top:1vh;left:2vw;right:2vw;
+  display:flex;justify-content:space-between;align-items:center;
+  z-index:5;
+}
+header h1{margin:0;font-size:clamp(18px,2.6vw,30px);color:#fff}
+header button{
   background:transparent;
   border:2px solid var(--line);
   color:#fff;
-  padding:.45em .9em;
-  border-radius:14px;
-  font-size:clamp(12px,1.4vw,15px);
+  padding:.4em .8em;
+  border-radius:12px;
   cursor:pointer;
 }
 
-/* 強調按鍵 */
-.btn-primary{
+/* 規則導入 */
+#intro{
+  position:absolute;inset:0;
+  background:var(--board);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:1em;
+  color:#fff;
+  z-index:10;
+}
+.rule{
+  opacity:0;
+  animation:fadeIn .8s forwards;
+}
+.rule:nth-child(1){animation-delay:.3s}
+.rule:nth-child(2){animation-delay:.9s}
+.rule:nth-child(3){animation-delay:1.5s}
+.rule:nth-child(4){animation-delay:2.1s}
+
+@keyframes fadeIn{
+  to{opacity:1}
+}
+
+#startBtn{
+  margin-top:1.5em;
   background:var(--accent);
   color:#000;
+  font-size:18px;
+  padding:.6em 1.4em;
   border:none;
-  font-weight:bold;
+  border-radius:16px;
+  cursor:pointer;
 }
-.btn-primary:hover{opacity:.85}
 
-/* Cards */
+/* 遊戲區 */
+.stage{
+  position:absolute;
+  inset:0;
+  padding:8vh 2vw 2vh;
+  display:none;
+  grid-template-rows:1fr auto;
+}
+
+/* 卡片 */
 .cards{
   display:grid;
   grid-template-columns:repeat(5,1fr);
@@ -84,190 +112,147 @@ button{
   display:flex;justify-content:center;align-items:center;
   backface-visibility:hidden;text-align:center;padding:1em
 }
-.front{font-size:clamp(32px,5vw,64px);font-weight:900}
-.back{transform:rotateY(180deg);flex-direction:column;gap:.5em}
-.back .eng{font-size:clamp(15px,2.2vw,26px);font-weight:900}
-.back .zh{font-size:clamp(13px,1.8vw,20px);opacity:.9}
-
-/* Footer */
-footer{
-  display:grid;
-  grid-template-columns:1fr auto;
-  gap:1vw;
-  font-size:clamp(12px,1.3vw,14px);
+.front{font-size:clamp(32px,5vw,64px);font-weight:900;color:#fff}
+.back{
+  transform:rotateY(180deg);
+  flex-direction:column;gap:.5em;color:#fff
 }
-.rules{
-  background:rgba(255,255,255,.05);
+
+/* 規則小卡 */
+.rules-mini{
+  position:absolute;
+  right:1vw;bottom:1vh;
+  background:rgba(255,255,255,.08);
+  padding:.6em .8em;
   border-radius:12px;
-  padding:.6em .9em;
+  font-size:13px;
   color:var(--soft);
 }
-.mission{color:var(--accent)}
 
 /* 老師側欄 */
 .teacher{
-  width:300px;
+  position:absolute;
+  right:0;top:0;
+  width:280px;height:100%;
   background:#10291d;
   border-left:2px solid var(--line);
   padding:1em;
-  font-size:13px;
+  display:none;
   color:#fff;
-  overflow-y:auto;
 }
-.teacher h3{
-  margin:.6em 0 .3em;
-  font-size:14px;
-  border-bottom:1px solid rgba(255,255,255,.2);
-  padding-bottom:.2em;
+.teacher h3{margin-top:0}
+.teacher input,.teacher textarea{
+  width:100%;margin:.3em 0;padding:.4em;border-radius:6px;border:none
 }
-.teacher input,
-.teacher textarea{
-  width:100%;
-  margin:.3em 0;
-  padding:.4em;
-  border-radius:6px;
-  border:none;
-}
-.teacher textarea{height:3em}
-
-.teacher .hint{
-  font-size:12px;
-  color:#cfe6da;
-  margin-bottom:.3em;
+.teacher button{
+  width:100%;margin-top:.4em;
+  background:var(--accent);border:none;
+  border-radius:10px;padding:.4em;
+  cursor:pointer;
 }
 
-.teacher .current{
-  font-size:12px;
-  color:var(--accent);
-  margin-top:.3em;
-}
+/* 狀態 */
+.show{display:block}
+.showGrid{display:grid}
 </style>
 </head>
 
 <body>
 <div class="app">
 
-  <!-- 主舞台 -->
-  <div class="stage">
-    <header>
-      <h1>Word Mission｜單字解鎖任務</h1>
-      <div class="controls">
-        <button onclick="loadPreset()">預設題目</button>
-        <button onclick="loadRandom()">隨機題目</button>
-      </div>
-    </header>
+<header>
+  <h1>Word Mission</h1>
+  <button onclick="toggleTeacher()">⚙️ 老師設定</button>
+</header>
 
-    <div class="cards" id="cards"></div>
+<!-- 規則導入 -->
+<div id="intro">
+  <div class="rule">👥 五人一組，一人一張卡</div>
+  <div class="rule">🔄 翻牌後的英文＋中文是正解</div>
+  <div class="rule">🎤 神秘嘉賓只需唸英文＋中文</div>
+  <div class="rule">🏆 全組完成即可獲得獎勵</div>
+  <button id="startBtn" onclick="startGame()">我接下任務</button>
+</div>
 
-    <footer>
-      <div class="mission">🎯 全員完成 → 任務成功</div>
-      <div class="rules">
-        👥 五人一組，一人一張卡<br>
-        🔄 翻牌後英文＋中文為正解<br>
-        🎤 神秘嘉賓唸英文＋中文
-      </div>
-    </footer>
+<!-- 遊戲畫面 -->
+<div class="stage" id="stage">
+  <div class="cards" id="cards"></div>
+  <div class="rules-mini">
+    👥 一人一張卡<br>
+    🔄 翻牌是正解<br>
+    🎤 神秘嘉賓可用
   </div>
+</div>
 
-  <!-- 老師設定 -->
-  <div class="teacher">
-    <h3>🧑‍🏫 新增單字</h3>
-    <input id="tLetter" placeholder="字母 a–z">
-    <input id="tEng" placeholder="英文單字">
-    <input id="tZh" placeholder="中文意思">
-    <button class="btn-primary" onclick="addWord()">新增並永久儲存</button>
+<!-- 老師設定 -->
+<div class="teacher" id="teacher">
+  <h3>新增單字</h3>
+  <input id="tLetter" placeholder="字母 a-z">
+  <input id="tEng" placeholder="英文">
+  <input id="tZh" placeholder="中文">
+  <button onclick="addWord()">新增單字</button>
 
-    <h3>📝 新增預設題目</h3>
-    <div class="hint">請輸入 5 個小寫字母（用空格分開）</div>
-    <textarea id="presetInput" placeholder="例如：g e w q a"></textarea>
-    <button class="btn-primary" onclick="savePreset()">儲存預設題目</button>
-    <div class="current" id="currentPreset"></div>
-  </div>
+  <h3>新增預設題目</h3>
+  <textarea id="presetInput" placeholder="g e w q a"></textarea>
+  <button onclick="savePreset()">儲存預設題</button>
+</div>
 
 </div>
 
 <script>
-/* ===== 單字庫（永久） ===== */
 const defaultVocab={
   g:[["gate","大門"]],
   e:[["error","錯誤"]],
   w:[["wallet","錢包"]],
   q:[["quiz","小考"]],
-  a:[["area","區域"]],
-  s:[["screen","螢幕"],["show up","出現"],["slide","滑動"]]
+  a:[["area","區域"]]
 };
-
 let vocab=JSON.parse(localStorage.getItem("vocab"))||defaultVocab;
 let preset=JSON.parse(localStorage.getItem("preset"))||["g","e","w","q","a"];
-
 const cards=document.getElementById("cards");
-const presetLabel=document.getElementById("currentPreset");
 
-function updatePresetLabel(){
-  presetLabel.textContent="目前預設題目：" + preset.join(" ");
+function startGame(){
+  document.getElementById("intro").style.display="none";
+  document.getElementById("stage").classList.add("showGrid");
+  render(preset);
 }
-updatePresetLabel();
 
-/* ===== 渲染 ===== */
 function render(letters){
   cards.innerHTML="";
-  const used=new Set();
   letters.forEach(l=>{
-    const list=vocab[l];
-    let word;
-    do{
-      word=list[Math.floor(Math.random()*list.length)];
-    }while(used.has(word[0]) && list.length>1);
-    used.add(word[0]);
-
-    const card=document.createElement("div");
-    card.className="card";
-    card.innerHTML=`
+    const word=vocab[l][0];
+    const c=document.createElement("div");
+    c.className="card";
+    c.innerHTML=`
       <div class="inner">
         <div class="face front">${l}</div>
         <div class="face back">
-          <div class="eng">${word[0]}</div>
-          <div class="zh">${word[1]}</div>
+          <div>${word[0]}</div>
+          <div>${word[1]}</div>
         </div>
       </div>`;
-    card.onclick=()=>card.classList.toggle("flip");
-    cards.appendChild(card);
+    c.onclick=()=>c.classList.toggle("flip");
+    cards.appendChild(c);
   });
 }
 
-/* ===== 按鍵 ===== */
-function loadPreset(){render(preset)}
-function loadRandom(){
-  const keys=Object.keys(vocab);
-  const arr=[];
-  while(arr.length<5){
-    arr.push(keys[Math.floor(Math.random()*keys.length)]);
-  }
-  render(arr);
+function toggleTeacher(){
+  const t=document.getElementById("teacher");
+  t.classList.toggle("show");
 }
 
-/* ===== 老師功能 ===== */
 function addWord(){
-  const l=tLetter.value.trim();
-  const e=tEng.value.trim();
-  const z=tZh.value.trim();
-  if(!l||!e||!z) return alert("請填完整");
-  if(!vocab[l]) vocab[l]=[];
-  vocab[l].push([e,z]);
+  if(!vocab[tLetter.value]) vocab[tLetter.value]=[];
+  vocab[tLetter.value].push([tEng.value,tZh.value]);
   localStorage.setItem("vocab",JSON.stringify(vocab));
-  alert("單字已永久儲存");
+  alert("已新增");
 }
 
 function savePreset(){
-  const arr=presetInput.value.trim().split(/\s+/);
-  if(arr.length!==5) return alert("必須是 5 個字母");
-  preset=arr;
+  preset=presetInput.value.trim().split(/\s+/);
   localStorage.setItem("preset",JSON.stringify(preset));
-  updatePresetLabel();
   alert("預設題目已儲存");
 }
-
-loadPreset();
 </script>
 </body>
 </html>
