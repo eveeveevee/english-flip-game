@@ -15,7 +15,31 @@ html,body{
   background:#0f2a1d;
 }
 
-.app{
+/* ===== 導入畫面 ===== */
+#intro{
+  position:fixed;
+  inset:0;
+  background:#0f2a1d;
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  z-index:10;
+}
+
+#intro button{
+  margin-top:20px;
+  padding:10px 20px;
+  border-radius:20px;
+  border:none;
+  background:#fff;
+  font-size:16px;
+  cursor:pointer;
+}
+
+/* ===== 遊戲主畫面 ===== */
+#game{
   width:100%;
   height:100%;
   display:flex;
@@ -71,46 +95,4 @@ html,body{
   background:#1f4d36;
   transform:rotateY(180deg);
   color:#fff;
-  flex-direction:column;
-  gap:8px;
-}
-
-.eng{font-size:22px;font-weight:700}
-.zh{font-size:18px;opacity:.9}
-</style>
-</head>
-
-<body>
-<div class="app">
-  <div class="cards" id="cards"></div>
-</div>
-
-<script>
-const data = [
-  {letter:"g", eng:"gate", zh:"大門"},
-  {letter:"e", eng:"error", zh:"錯誤"},
-  {letter:"w", eng:"wallet", zh:"錢包"},
-  {letter:"q", eng:"quiz", zh:"小考"},
-  {letter:"a", eng:"area", zh:"區域"}
-];
-
-const cardsEl = document.getElementById("cards");
-
-data.forEach(item=>{
-  const card = document.createElement("div");
-  card.className = "card";
-  card.innerHTML = `
-    <div class="card-inner">
-      <div class="card-face card-front">${item.letter}</div>
-      <div class="card-face card-back">
-        <div class="eng">${item.eng}</div>
-        <div class="zh">${item.zh}</div>
-      </div>
-    </div>
-  `;
-  card.onclick = ()=>card.classList.toggle("flip");
-  cardsEl.appendChild(card);
-});
-</script>
-</body>
-</html>
+  flex-direction:colu
