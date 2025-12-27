@@ -4,19 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>English Flip Game</title>
-<div style="
-  position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  background:red;
-  color:white;
-  z-index:9999;
-  text-align:center;
-  font-size:20px;
-">
-  VERSION TEST 999
-</div>
 
 <style>
 *{box-sizing:border-box}
@@ -26,6 +13,7 @@ html,body{
   height:100%;
   font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;
   background:#0f2a1d;
+  color:#fff;
 }
 
 /* ===== 導入畫面 ===== */
@@ -33,79 +21,4 @@ html,body{
   position:fixed;
   inset:0;
   background:#0f2a1d;
-  color:#fff;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  z-index:10;
-}
-
-#intro button{
-  margin-top:20px;
-  padding:10px 20px;
-  border-radius:20px;
-  border:none;
-  background:#fff;
-  font-size:16px;
-  cursor:pointer;
-}
-
-/* ===== 遊戲主畫面 ===== */
-#game{
-  width:100%;
-  height:100%;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
-.cards{
-  display:grid;
-  grid-template-columns:repeat(5,160px);
-  gap:20px;
-}
-
-/* ===== 翻牌核心 ===== */
-.card{
-  width:160px;
-  height:220px;
-  perspective:1000px;
-  cursor:pointer;
-}
-
-.card-inner{
-  width:100%;
-  height:100%;
-  position:relative;
-  transform-style:preserve-3d;
-  transition:transform .6s;
-}
-
-.card.flip .card-inner{
-  transform:rotateY(180deg);
-}
-
-.card-face{
-  position:absolute;
-  inset:0;
-  border-radius:16px;
-  border:2px solid #fff;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  backface-visibility:hidden;
-}
-
-.card-front{
-  background:#153827;
-  font-size:56px;
-  font-weight:900;
-  color:#fff;
-}
-
-.card-back{
-  background:#1f4d36;
-  transform:rotateY(180deg);
-  color:#fff;
-  flex-direction:colu
+  display:flex
