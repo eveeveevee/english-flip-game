@@ -1,189 +1,30 @@
-<!doctype html>
-<html lang="zh-Hant">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Word Mission｜英語單字翻牌任務</title>
-
-<style>
-/* ===== 基本設定 ===== */
-*{box-sizing:border-box}
-html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;
-  background:#0f2a1d;
-  overflow:hidden;
-}
-
-/* ===== 主舞台 ===== */
-.app{
-  width:100vw;
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  color:#fff;
-  position:relative;
-}
-
-/* ===== Header ===== */
-header{
-  position:absolute;
-  top:12px;
-  left:20px;
-  right:20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  z-index:20;
-}
-header h1{
-  margin:0;
-  font-size:clamp(20px,2.6vw,32px);
-}
-header a{
-  text-decoration:none;
-  border:2px solid #f4f1e8;
-  padding:6px 14px;
-  border-radius:14px;
-  color:#fff;
-  font-size:14px;
-}
-
-/* ===== 導入動畫 ===== */
-#intro{
-  position:absolute;
-  inset:0;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  gap:14px;
-  background:#0f2a1d;
-  z-index:10;
-}
-.rule{
-  opacity:0;
-  font-size:clamp(18px,2.4vw,26px);
-  transition:opacity .8s;
-}
-.rule.show{opacity:1}
-#startBtn{
-  margin-top:24px;
-  padding:12px 28px;
-  font-size:18px;
-  border:none;
-  border-radius:18px;
-  background:#f9c74f;
-  color:#000;
-  cursor:pointer;
-}
-
-/* ===== 遊戲畫面 ===== */
-#game{
-  position:absolute;
-  inset:0;
-  display:none;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  padding-top:70px;
-}
-
-/* ===== 卡片 ===== */
-.cards{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:20px;
-  width:80%;
-  max-width:1100px;
-}
-.card{
-  height:200px;
-  background:#153827;
-  border:2px solid #f4f1e8;
-  border-radius:18px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:clamp(36px,6vw,64px);
-  font-weight:900;
-  cursor:pointer;
-}
-
-/* ===== 規則小卡 ===== */
-.rules-mini{
-  position:absolute;
-  right:20px;
-  bottom:20px;
-  background:rgba(255,255,255,.08);
-  padding:12px 14px;
-  border-radius:14px;
-  font-size:14px;
-  line-height:1.4;
-  color:#cfe6da;
-}
-</style>
-</head>
-
-<body>
-<div class="app">
-
-  <!-- Header -->
-  <header>
-    <h1>Word Mission</h1>
-    <a href="teacher.html" target="_blank">⚙️ 老師設定</a>
-  </header>
-
-  <!-- 規則導入 -->
-  <div id="intro">
-    <div class="rule">👥 五人一組，一人一張卡</div>
-    <div class="rule">🔄 翻牌後的英文＋中文是正解</div>
-    <div class="rule">🎤 神秘嘉賓只需唸英文＋中文</div>
-    <div class="rule">🏆 全組完成即可獲得獎勵</div>
-    <button id="startBtn">我接下任務</button>
-  </div>
-
-  <!-- 遊戲畫面 -->
-  <div id="game">
-    <div class="cards" id="cards"></div>
-    <div class="rules-mini">
-      👥 一人一張卡<br>
-      🔄 翻牌即正解<br>
-      🎤 神秘嘉賓可用
-    </div>
-  </div>
-
-</div>
-
-<script>
-/* ===== 規則動畫 ===== */
-const rules=document.querySelectorAll(".rule");
-rules.forEach((r,i)=>{
-  setTimeout(()=>r.classList.add("show"),700*i);
-});
-
-/* ===== 開始遊戲 ===== */
-document.getElementById("startBtn").onclick=()=>{
-  document.getElementById("intro").style.display="none";
-  document.getElementById("game").style.display="flex";
-  renderCards();
-};
-
-/* ===== 產生卡片 ===== */
 function renderCards(){
-  const cards=document.getElementById("cards");
-  const preset=JSON.parse(localStorage.getItem("preset")) || ["g","e","w","q","a"];
-  cards.innerHTML="";
+  const cards = document.getElementById("cards");
+  const preset = JSON.parse(localStorage.getItem("preset")) || ["g","e","w","q","a"];
+  const vocab = JSON.parse(localStorage.getItem("vocab")) || {};
+
+  cards.innerHTML = "";
+
   preset.forEach(letter=>{
-    const c=document.createElement("div");
-    c.className="card";
-    c.textContent=letter;
-    cards.appendChild(c);
+    const list = vocab[letter];
+    if(!list || list.length===0) return;
+
+    const word = list[0]; // 老師設定的正解
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+      <div class="inner">
+        <div class="face front">${letter}</div>
+        <div class="face back">
+          <div>${word[0]}</div>
+          <div>${word[1]}</div>
+        </div>
+      </div>
+    `;
+
+    card.onclick = ()=>card.classList.toggle("flip");
+    cards.appendChild(card);
   });
 }
-</script>
-</body>
-</html>
