@@ -13,7 +13,9 @@
   --line:#f4f1e8;
   --accent:#f9c74f;
 }
+
 *{box-sizing:border-box}
+
 html,body{
   margin:0;
   width:100%;
@@ -21,26 +23,36 @@ html,body{
   font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
   background:var(--bg);
 }
+
 body{
   display:flex;
   justify-content:center;
   align-items:center;
 }
+
+/* ===== 外框（固定 16:9，不被 padding 撐爆） ===== */
 .app{
   width:95vw;
   max-width:1280px;
-  aspect-ratio:16/9;
+  height:calc(95vw * 9 / 16);
+  max-height:95vh;
   background:var(--board);
   border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 0 0 6px rgba(255,255,255,.05);
+  position:relative;
+}
+
+/* ===== 內層內容（安全 padding） ===== */
+.content{
+  height:100%;
   padding:2vh 2vw;
   display:flex;
   flex-direction:column;
   color:#fff;
-  position:relative;
-  box-shadow:0 0 0 6px rgba(255,255,255,.05);
 }
 
-/* ===== Intro ===== */
+/* ===== 前導任務畫面 ===== */
 #intro{
   position:absolute;
   inset:0;
@@ -53,9 +65,12 @@ body{
   z-index:10;
   transition:1s;
 }
-#intro.hide{opacity:0;pointer-events:none}
+#intro.hide{
+  opacity:0;
+  pointer-events:none;
+}
 #intro .icon{
-  font-size:clamp(40px,6vw,72px);
+  font-size:clamp(48px,6vw,80px);
 }
 #intro .text{
   font-size:clamp(18px,3vw,32px);
@@ -89,7 +104,7 @@ button:hover{
   background:rgba(255,255,255,.08);
 }
 
-/* ===== Cards ===== */
+/* ===== 卡片區 ===== */
 main{
   flex:1;
   display:grid;
@@ -97,8 +112,11 @@ main{
   gap:1.5vw;
   margin:3vh 0;
 }
+
+/* ===== 翻牌卡 ===== */
 .card{
   perspective:1200px;
+  cursor:pointer;
 }
 .inner{
   width:100%;
@@ -106,7 +124,9 @@ main{
   transition:.7s;
   transform-style:preserve-3d;
 }
-.card.flip .inner{transform:rotateY(180deg)}
+.card.flip .inner{
+  transform:rotateY(180deg);
+}
 .face{
   position:absolute;
   inset:0;
@@ -154,34 +174,34 @@ footer{
 <body>
 <div class="app">
 
-  <!-- Intro -->
+  <!-- 前導任務 -->
   <div id="intro">
     <div class="icon">🔒</div>
-    <div class="text">黑板系統異常，請解鎖單字任務</div>
+    <div class="text">黑板系統異常，請協助解鎖單字任務</div>
   </div>
 
-  <header>
-    <h1>Word Mission｜單字解鎖任務</h1>
-    <div class="controls">
-      <button onclick="loadPreset()">預設題目</button>
-      <button onclick="loadRandom()">隨機題目</button>
-    </div>
-  </header>
+  <div class="content">
 
-  <main id="cards"></main>
+    <header>
+      <h1>Word Mission｜單字解鎖任務</h1>
+      <div class="controls">
+        <button onclick="loadPreset()">預設題目</button>
+        <button onclick="loadRandom()">隨機題目</button>
+      </div>
+    </header>
 
-  <footer>
-    <div>
-      五人一組，一人一張卡，翻牌後的英文＋中文為正解。
-    </div>
-    <div class="mission">
-      全員完成 → 任務成功 🎉
-    </div>
-  </footer>
+    <main id="cards"></main>
 
+    <footer>
+      <div>五人一組，一人一張卡，翻牌後的英文＋中文為正解。</div>
+      <div class="mission">全員完成 → 任務成功 🎉</div>
+    </footer>
+
+  </div>
 </div>
 
 <script>
+/* ===== 單字庫 ===== */
 const vocab={
   g:[["gate","大門"]],
   e:[["error","錯誤"]],
@@ -190,16 +210,19 @@ const vocab={
   a:[["area","區域"]],
   s:[["screen","螢幕"],["show up","出現"],["slide","滑動"]]
 };
-const presets=[["g","e","w","q","a"]];
+
+const preset=[ "g","e","w","q","a" ];
 const cards=document.getElementById("cards");
 
+/* ===== 產生卡片 ===== */
 function render(letters){
   cards.innerHTML="";
   letters.forEach(l=>{
-    const word=vocab[l][Math.floor(Math.random()*vocab[l].length)];
-    const c=document.createElement("div");
-    c.className="card";
-    c.innerHTML=`
+    const list=vocab[l];
+    const word=list[Math.floor(Math.random()*list.length)];
+    const card=document.createElement("div");
+    card.className="card";
+    card.innerHTML=`
       <div class="inner">
         <div class="face front">${l}</div>
         <div class="face back">
@@ -207,18 +230,25 @@ function render(letters){
           <div class="zh">${word[1]}</div>
         </div>
       </div>`;
-    c.onclick=()=>c.classList.toggle("flip");
-    cards.appendChild(c);
+    card.onclick=()=>card.classList.toggle("flip");
+    cards.appendChild(card);
   });
 }
 
-function loadPreset(){render(presets[0])}
-function loadRandom(){render(presets[0])}
+/* ===== 按鍵行為 ===== */
+function loadPreset(){
+  render(preset);
+}
+function loadRandom(){
+  render(preset); // 可之後擴充真正隨機
+}
 
+/* ===== 前導動畫 ===== */
 setTimeout(()=>{
   document.getElementById("intro").classList.add("hide");
 },2200);
 
+/* 初始 */
 loadPreset();
 </script>
 </body>
