@@ -14,7 +14,6 @@
   --accent:#f9c74f;
   --soft:#cfe6da;
 }
-
 *{box-sizing:border-box}
 html,body{
   margin:0;width:100%;height:100%;
@@ -23,7 +22,7 @@ html,body{
 }
 body{display:flex;justify-content:center;align-items:center}
 
-/* ===== 舞台 ===== */
+/* 舞台 */
 .app{
   width:94vw;max-width:1280px;
   height:calc(94vw * 9 / 16);max-height:92vh;
@@ -35,7 +34,7 @@ body{display:flex;justify-content:center;align-items:center}
   overflow:hidden;
 }
 
-/* ===== 主舞台 ===== */
+/* 主舞台 */
 .stage{
   flex:1;
   padding:1.5vh 2vw;
@@ -43,32 +42,39 @@ body{display:flex;justify-content:center;align-items:center}
   grid-template-rows:min-content 1fr min-content;
   gap:1vh;
   color:#fff;
-  transition:.4s;
 }
 
-/* ===== Header ===== */
-header{
-  display:flex;justify-content:space-between;align-items:center
-}
+/* Header */
+header{display:flex;justify-content:space-between;align-items:center}
 header h1{margin:0;font-size:clamp(18px,2.6vw,30px)}
 .controls{display:flex;gap:10px}
 button{
-  background:transparent;border:2px solid var(--line);color:#fff;
-  padding:.45em .9em;border-radius:14px;
-  font-size:clamp(12px,1.4vw,15px);cursor:pointer
+  background:transparent;
+  border:2px solid var(--line);
+  color:#fff;
+  padding:.45em .9em;
+  border-radius:14px;
+  font-size:clamp(12px,1.4vw,15px);
+  cursor:pointer;
 }
 
-/* ===== Cards ===== */
+/* 強調按鍵 */
+.btn-primary{
+  background:var(--accent);
+  color:#000;
+  border:none;
+  font-weight:bold;
+}
+.btn-primary:hover{opacity:.85}
+
+/* Cards */
 .cards{
   display:grid;
   grid-template-columns:repeat(5,1fr);
   gap:1.2vw;
 }
 .card{perspective:1200px;cursor:pointer}
-.inner{
-  width:100%;height:100%;
-  transition:.6s;transform-style:preserve-3d
-}
+.inner{width:100%;height:100%;transition:.6s;transform-style:preserve-3d}
 .card.flip .inner{transform:rotateY(180deg)}
 .face{
   position:absolute;inset:0;
@@ -79,14 +85,11 @@ button{
   backface-visibility:hidden;text-align:center;padding:1em
 }
 .front{font-size:clamp(32px,5vw,64px);font-weight:900}
-.back{
-  transform:rotateY(180deg);
-  flex-direction:column;gap:.5em
-}
+.back{transform:rotateY(180deg);flex-direction:column;gap:.5em}
 .back .eng{font-size:clamp(15px,2.2vw,26px);font-weight:900}
 .back .zh{font-size:clamp(13px,1.8vw,20px);opacity:.9}
 
-/* ===== Footer ===== */
+/* Footer */
 footer{
   display:grid;
   grid-template-columns:1fr auto;
@@ -101,51 +104,42 @@ footer{
 }
 .mission{color:var(--accent)}
 
-/* ===== 老師側欄 ===== */
+/* 老師側欄 */
 .teacher{
-  width:280px;
+  width:300px;
   background:#10291d;
   border-left:2px solid var(--line);
   padding:1em;
   font-size:13px;
   color:#fff;
-  transition:.4s;
+  overflow-y:auto;
 }
-.teacher.hidden{
-  width:0;
-  padding:0;
+.teacher h3{
+  margin:.6em 0 .3em;
+  font-size:14px;
+  border-bottom:1px solid rgba(255,255,255,.2);
+  padding-bottom:.2em;
+}
+.teacher input,
+.teacher textarea{
+  width:100%;
+  margin:.3em 0;
+  padding:.4em;
+  border-radius:6px;
   border:none;
-  overflow:hidden;
 }
+.teacher textarea{height:3em}
 
-/* ===== 老師工具列 ===== */
-.teacher-toolbar{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:.5em;
-}
-.teacher-toolbar button{
+.teacher .hint{
   font-size:12px;
-  padding:.2em .6em;
+  color:#cfe6da;
+  margin-bottom:.3em;
 }
 
-/* ===== 成功動畫 ===== */
-#success{
-  position:absolute;
-  inset:0;
-  background:rgba(15,42,29,.92);
-  display:none;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  gap:1em;
-  z-index:50;
-}
-#success.show{display:flex}
-#success .icon{font-size:72px}
-#success .text{
-  font-size:32px;
+.teacher .current{
+  font-size:12px;
   color:var(--accent);
+  margin-top:.3em;
 }
 </style>
 </head>
@@ -154,7 +148,7 @@ footer{
 <div class="app">
 
   <!-- 主舞台 -->
-  <div class="stage" id="stage">
+  <div class="stage">
     <header>
       <h1>Word Mission｜單字解鎖任務</h1>
       <div class="controls">
@@ -175,37 +169,25 @@ footer{
     </footer>
   </div>
 
-  <!-- 老師側欄 -->
-  <div class="teacher" id="teacher">
-    <div class="teacher-toolbar">
-      <strong>🧑‍🏫 老師</strong>
-      <div>
-        <button onclick="toggleTeacher()">📌</button>
-        <button onclick="toggleProject()">📽</button>
-      </div>
-    </div>
+  <!-- 老師設定 -->
+  <div class="teacher">
+    <h3>🧑‍🏫 新增單字</h3>
+    <input id="tLetter" placeholder="字母 a–z">
+    <input id="tEng" placeholder="英文單字">
+    <input id="tZh" placeholder="中文意思">
+    <button class="btn-primary" onclick="addWord()">新增並永久儲存</button>
 
-    <div>
-      <input id="tLetter" placeholder="字母 a-z">
-      <input id="tEng" placeholder="英文">
-      <input id="tZh" placeholder="中文">
-      <button onclick="addWord()">新增單字</button>
-
-      <textarea id="presetInput" placeholder="預設題目：g e w q a"></textarea>
-      <button onclick="savePreset()">儲存預設題</button>
-    </div>
-  </div>
-
-  <!-- 成功畫面 -->
-  <div id="success">
-    <div class="icon">🎉</div>
-    <div class="text">任務完成！</div>
+    <h3>📝 新增預設題目</h3>
+    <div class="hint">請輸入 5 個小寫字母（用空格分開）</div>
+    <textarea id="presetInput" placeholder="例如：g e w q a"></textarea>
+    <button class="btn-primary" onclick="savePreset()">儲存預設題目</button>
+    <div class="current" id="currentPreset"></div>
   </div>
 
 </div>
 
 <script>
-/* ===== 單字庫 ===== */
+/* ===== 單字庫（永久） ===== */
 const defaultVocab={
   g:[["gate","大門"]],
   e:[["error","錯誤"]],
@@ -217,14 +199,19 @@ const defaultVocab={
 
 let vocab=JSON.parse(localStorage.getItem("vocab"))||defaultVocab;
 let preset=JSON.parse(localStorage.getItem("preset"))||["g","e","w","q","a"];
+
 const cards=document.getElementById("cards");
+const presetLabel=document.getElementById("currentPreset");
+
+function updatePresetLabel(){
+  presetLabel.textContent="目前預設題目：" + preset.join(" ");
+}
+updatePresetLabel();
 
 /* ===== 渲染 ===== */
 function render(letters){
   cards.innerHTML="";
-  let flipped=0;
   const used=new Set();
-
   letters.forEach(l=>{
     const list=vocab[l];
     let word;
@@ -243,22 +230,9 @@ function render(letters){
           <div class="zh">${word[1]}</div>
         </div>
       </div>`;
-    card.onclick=()=>{
-      if(!card.classList.contains("flip")){
-        card.classList.add("flip");
-        flipped++;
-        if(flipped===5) unlock();
-      }
-    };
+    card.onclick=()=>card.classList.toggle("flip");
     cards.appendChild(card);
   });
-}
-
-/* ===== 任務完成 ===== */
-function unlock(){
-  const s=document.getElementById("success");
-  s.classList.add("show");
-  setTimeout(()=>s.classList.remove("show"),2000);
 }
 
 /* ===== 按鍵 ===== */
@@ -281,24 +255,16 @@ function addWord(){
   if(!vocab[l]) vocab[l]=[];
   vocab[l].push([e,z]);
   localStorage.setItem("vocab",JSON.stringify(vocab));
-  alert("單字已儲存");
+  alert("單字已永久儲存");
 }
 
 function savePreset(){
   const arr=presetInput.value.trim().split(/\s+/);
-  if(arr.length!==5) return alert("需 5 個字母");
+  if(arr.length!==5) return alert("必須是 5 個字母");
   preset=arr;
   localStorage.setItem("preset",JSON.stringify(preset));
-  alert("預設題已儲存");
-}
-
-/* ===== 側欄控制 ===== */
-function toggleTeacher(){
-  document.getElementById("teacher").classList.toggle("hidden");
-}
-function toggleProject(){
-  toggleTeacher();
-  document.getElementById("stage").style.flex="1";
+  updatePresetLabel();
+  alert("預設題目已儲存");
 }
 
 loadPreset();
