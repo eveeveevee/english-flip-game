@@ -12,6 +12,7 @@
   --card:#153827;
   --line:#f4f1e8;
   --accent:#f9c74f;
+  --soft:#cfe6da;
 }
 
 *{box-sizing:border-box}
@@ -30,12 +31,12 @@ body{
   align-items:center;
 }
 
-/* ===== 外框（固定 16:9，不被 padding 撐爆） ===== */
+/* ===== 固定舞台 ===== */
 .app{
-  width:95vw;
+  width:94vw;
   max-width:1280px;
-  height:calc(95vw * 9 / 16);
-  max-height:95vh;
+  height:calc(94vw * 9 / 16);
+  max-height:92vh;
   background:var(--board);
   border-radius:20px;
   overflow:hidden;
@@ -43,16 +44,7 @@ body{
   position:relative;
 }
 
-/* ===== 內層內容（安全 padding） ===== */
-.content{
-  height:100%;
-  padding:2vh 2vw;
-  display:flex;
-  flex-direction:column;
-  color:#fff;
-}
-
-/* ===== 前導任務畫面 ===== */
+/* ===== 前導畫面 ===== */
 #intro{
   position:absolute;
   inset:0;
@@ -77,6 +69,16 @@ body{
   opacity:.9;
 }
 
+/* ===== 主內容 ===== */
+.layout{
+  height:100%;
+  display:grid;
+  grid-template-rows:min-content 1fr min-content;
+  padding:1.5vh 2vw;
+  gap:1vh;
+  color:#fff;
+}
+
 /* ===== Header ===== */
 header{
   display:flex;
@@ -85,48 +87,37 @@ header{
 }
 header h1{
   margin:0;
-  font-size:clamp(20px,3vw,32px);
+  font-size:clamp(18px,2.6vw,30px);
 }
 .controls{
   display:flex;
-  gap:12px;
+  gap:10px;
 }
 button{
   background:transparent;
   border:2px solid var(--line);
   color:#fff;
-  padding:.5em 1em;
+  padding:.45em .9em;
   border-radius:14px;
-  font-size:clamp(12px,1.5vw,16px);
+  font-size:clamp(12px,1.4vw,15px);
   cursor:pointer;
 }
-button:hover{
-  background:rgba(255,255,255,.08);
-}
+button:hover{background:rgba(255,255,255,.08)}
 
-/* ===== 卡片區 ===== */
-main{
-  flex:1;
+/* ===== 卡片 ===== */
+.cards{
   display:grid;
   grid-template-columns:repeat(5,1fr);
-  gap:1.5vw;
-  margin:3vh 0;
+  gap:1.2vw;
 }
-
-/* ===== 翻牌卡 ===== */
-.card{
-  perspective:1200px;
-  cursor:pointer;
-}
+.card{perspective:1200px;cursor:pointer}
 .inner{
   width:100%;
   height:100%;
-  transition:.7s;
+  transition:.6s;
   transform-style:preserve-3d;
 }
-.card.flip .inner{
-  transform:rotateY(180deg);
-}
+.card.flip .inner{transform:rotateY(180deg)}
 .face{
   position:absolute;
   inset:0;
@@ -140,33 +131,57 @@ main{
   text-align:center;
   padding:1em;
 }
-.front{
-  font-size:clamp(36px,6vw,72px);
-  font-weight:900;
-}
+.front{font-size:clamp(32px,5vw,64px);font-weight:900}
 .back{
   transform:rotateY(180deg);
   flex-direction:column;
   gap:.5em;
 }
-.back .eng{
-  font-size:clamp(16px,2.4vw,28px);
-  font-weight:900;
-}
-.back .zh{
-  font-size:clamp(14px,2vw,22px);
-  opacity:.9;
-}
+.back .eng{font-size:clamp(15px,2.2vw,26px);font-weight:900}
+.back .zh{font-size:clamp(13px,1.8vw,20px);opacity:.9}
 
 /* ===== Footer ===== */
 footer{
-  display:flex;
-  justify-content:space-between;
-  font-size:clamp(12px,1.4vw,14px);
-  opacity:.9;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:1vw;
+  font-size:clamp(12px,1.3vw,14px);
 }
-.mission{
-  color:var(--accent);
+.rules{
+  background:rgba(255,255,255,.05);
+  border-radius:12px;
+  padding:.6em .9em;
+  color:var(--soft);
+}
+.rules div{display:flex;gap:.4em;margin-bottom:.3em}
+.mission{color:var(--accent)}
+
+/* ===== 老師設定區 ===== */
+.teacher{
+  position:absolute;
+  right:1vw;
+  bottom:1vh;
+  background:#10291d;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:.6em;
+  width:260px;
+  font-size:13px;
+}
+.teacher summary{
+  cursor:pointer;
+  font-weight:bold;
+}
+.teacher input{
+  width:100%;
+  margin:.3em 0;
+  padding:.3em;
+  border-radius:6px;
+  border:none;
+}
+.teacher button{
+  width:100%;
+  margin-top:.4em;
 }
 </style>
 </head>
@@ -174,14 +189,12 @@ footer{
 <body>
 <div class="app">
 
-  <!-- 前導任務 -->
   <div id="intro">
     <div class="icon">🔒</div>
     <div class="text">黑板系統異常，請協助解鎖單字任務</div>
   </div>
 
-  <div class="content">
-
+  <div class="layout">
     <header>
       <h1>Word Mission｜單字解鎖任務</h1>
       <div class="controls">
@@ -190,18 +203,31 @@ footer{
       </div>
     </header>
 
-    <main id="cards"></main>
+    <div class="cards" id="cards"></div>
 
     <footer>
-      <div>五人一組，一人一張卡，翻牌後的英文＋中文為正解。</div>
-      <div class="mission">全員完成 → 任務成功 🎉</div>
+      <div class="mission">🎯 全員完成 → 任務成功</div>
+      <div class="rules">
+        <div>👥 五人一組，一人一張卡</div>
+        <div>🔄 翻牌後英文＋中文為正解</div>
+        <div>🎤 神秘嘉賓唸英文＋中文</div>
+        <div>🏆 全組完成即可獎勵</div>
+      </div>
     </footer>
-
   </div>
+
+  <!-- 老師設定 -->
+  <details class="teacher">
+    <summary>🧑‍🏫 老師新增單字</summary>
+    <input id="tLetter" placeholder="字母（小寫）">
+    <input id="tEng" placeholder="英文單字">
+    <input id="tZh" placeholder="中文意思">
+    <button onclick="addWord()">新增到單字庫</button>
+  </details>
+
 </div>
 
 <script>
-/* ===== 單字庫 ===== */
 const vocab={
   g:[["gate","大門"]],
   e:[["error","錯誤"]],
@@ -211,13 +237,13 @@ const vocab={
   s:[["screen","螢幕"],["show up","出現"],["slide","滑動"]]
 };
 
-const preset=[ "g","e","w","q","a" ];
+const preset=["g","e","w","q","a"];
 const cards=document.getElementById("cards");
 
-/* ===== 產生卡片 ===== */
 function render(letters){
   cards.innerHTML="";
   letters.forEach(l=>{
+    if(!vocab[l]) return;
     const list=vocab[l];
     const word=list[Math.floor(Math.random()*list.length)];
     const card=document.createElement("div");
@@ -235,20 +261,20 @@ function render(letters){
   });
 }
 
-/* ===== 按鍵行為 ===== */
-function loadPreset(){
-  render(preset);
-}
-function loadRandom(){
-  render(preset); // 可之後擴充真正隨機
+function loadPreset(){render(preset)}
+function loadRandom(){render(preset)}
+
+function addWord(){
+  const l=document.getElementById("tLetter").value.trim();
+  const e=document.getElementById("tEng").value.trim();
+  const z=document.getElementById("tZh").value.trim();
+  if(!l||!e||!z) return alert("請填完整");
+  if(!vocab[l]) vocab[l]=[];
+  vocab[l].push([e,z]);
+  alert(`已新增：${l} → ${e}`);
 }
 
-/* ===== 前導動畫 ===== */
-setTimeout(()=>{
-  document.getElementById("intro").classList.add("hide");
-},2200);
-
-/* 初始 */
+setTimeout(()=>document.getElementById("intro").classList.add("hide"),2000);
 loadPreset();
 </script>
 </body>
